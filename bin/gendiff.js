@@ -11,7 +11,7 @@ program
   .option('-f, --format <type>', 'output format')
   .action((filepath1, filepath2) => {
     const result = getDiff(filepath1, filepath2);
-    console.log(result); 
+    console.log(result);
   });
   
 
