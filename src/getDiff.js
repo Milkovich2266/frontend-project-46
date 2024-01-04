@@ -11,7 +11,7 @@ const getDiff = (filepath1, filepath2) => {
     const pathFile2 = path.resolve(сurrentPath, filepath2);
     const readFile1 = readFileSync(pathFile1, 'utf8');
     const readFile2 = readFileSync(pathFile2, 'utf8');
-    
+
     parsingFiles(readFile1, typeFile1); 
     parsingFiles(readFile2, typeFile2);
 
