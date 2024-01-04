@@ -1,9 +1,9 @@
 
-const parsingFiles = (file1, file2) => {
-    const objFile1= JSON.parse(file1);
-    const objFile2= JSON.parse(file2);
-    const result = [ objFile1, objFile2 ];
-    console.log(result);
+const parsingFiles = (file, typeFiles) => {
+    if (typeFiles == JSON) { 
+      const objFile = JSON.parse(file);
+      return objFile;
+    }
 };
 
 export default parsingFiles; 
