@@ -8,7 +8,10 @@ const getDeepEqual = (file1, file2) => {
     const arrayFile2 = Object.keys(file2);
     const combineArrays = _.union(arrayFile1, arrayFile2);
     const turnOverCombiArrays = _.sortBy(combineArrays)
-    
+    return convertToString(turnOverCombiArrays, arrayFile1, arrayFile2, file1, file2);
+  };
+
+  const convertToString = (turnOverCombiArrays, arrayFile1, arrayFile2, file1, file2) => {
     let acc = '';
     (() => { turnOverCombiArrays.map((key) => {
       if (arrayFile2.includes(key)) {
@@ -25,7 +28,7 @@ const getDeepEqual = (file1, file2) => {
       }
     });
   })();
-    console.log(`{\n${acc}}`);
+    return (`{\n${acc}}`);
   };
 
 const getDiff = (filepath1, filepath2) => {
@@ -40,7 +43,7 @@ const getDiff = (filepath1, filepath2) => {
 
     const parsingFil1 = parsingFiles(readFile1, typeFile1); 
     const parsingFil2 = parsingFiles(readFile2, typeFile2);
-    getDeepEqual(parsingFil1, parsingFil2);
+    return getDeepEqual(parsingFil1, parsingFil2);
 }; 
 
 
