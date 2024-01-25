@@ -35,6 +35,7 @@ const getDiff = (filepath1, filepath2) => {
     const typeFile1 = path.extname(filepath1).slice(1);
     const typeFile2 = path.extname(filepath2).slice(1);
 
+    // eslint-disable-next-line no-undef
     const сurrentPath = process.cwd();
     const pathFile1 = path.resolve(сurrentPath, filepath1);
     const pathFile2 = path.resolve(сurrentPath, filepath2);
