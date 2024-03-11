@@ -1,5 +1,5 @@
 install:
-	npm si
+	npm ci
 gendiff:
 	node gendiff.js
 publish:
