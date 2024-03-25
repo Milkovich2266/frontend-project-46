@@ -5,6 +5,4 @@
 [![Node CI](https://github.com/Milkovich2266/frontend-project-46/actions/workflows/nodejs.yml/badge.svg)](https://github.com/Milkovich2266/frontend-project-46/actions)
 
 File Comparison (JSON):
-<a href="https://asciinema.org/a/w2vBeT9RrKGIJnirS7CjavbWi" target="_blank"><img src="https://asciinema.org/a/w2vBeT9RrKGIJnirS7CjavbWi.svg" /></a>
-1
-1
+<a href="https://asciinema.org/a/W9EOiPVWkCdZaghM05UkMarul" target="_blank"><img src="https://asciinema.org/a/W9EOiPVWkCdZaghM05UkMarul.svg" /></a>
