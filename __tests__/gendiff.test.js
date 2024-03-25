@@ -13,8 +13,8 @@ const format = (pathFile) => path.extname(pathFile); //добавил
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFixture = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8').trim();
 
-const getPathFile1 = getFixturePath(`file1.${format(getPathFile1)}`); //изменил с file1.json
-const getPathFile2 = getFixturePath(`file2.${format(getPathFile2)}`); //изменил
+const getPathFile1 = getFixturePath(`file1.${format}`); //изменил с file1.json
+const getPathFile2 = getFixturePath(`file2.${format}`); //изменил
 const readExpectedFile = readFixture('expected_file.txt');
 
 const readExpextedFileYml = readFixture('expected_file_yml.txt');
