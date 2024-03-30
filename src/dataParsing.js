@@ -7,8 +7,8 @@ const parsingFiles = (file, typeFiles) => {
       return objFile;
     }
     if (typeFiles == 'yml' || typeFiles == 'yaml') {
-      const objFile = yaml.load(file);
-      return objFile;
+      const objFileYml = yaml.load(file);
+      return objFileYml;
     }
     console.log('no');
 };
