@@ -6,3 +6,6 @@
 
 File Comparison (JSON):
 <a href="https://asciinema.org/a/W9EOiPVWkCdZaghM05UkMarul" target="_blank"><img src="https://asciinema.org/a/W9EOiPVWkCdZaghM05UkMarul.svg" /></a>
+
+File Comparison (YAML/YML):
+<a href="https://asciinema.org/a/d0TOVorQTUX4bq40bAJ8LJVwu" target="_blank"><img src="https://asciinema.org/a/d0TOVorQTUX4bq40bAJ8LJVwu.svg" /></a>
