@@ -3,33 +3,66 @@ import { readFileSync } from 'fs';
 import parsingFiles from '../src/dataParsing.js'
 import _ from 'lodash';
 
-const getDeepEqual = (file1, file2) => {
-    const arrayFile1 = Object.keys(file1);
-    const arrayFile2 = Object.keys(file2);
-    const combineArrays = _.union(arrayFile1, arrayFile2);
-    const turnOverCombiArrays = _.sortBy(combineArrays)
-    return convertToString(turnOverCombiArrays, arrayFile1, arrayFile2, file1, file2);
-  };
+let acc = [];
 
-  const convertToString = (turnOverCombiArrays, arrayFile1, arrayFile2, file1, file2) => {
-    let acc = '';
-    (() => { turnOverCombiArrays.map((key) => {
-      if (arrayFile2.includes(key)) {
-        if (_.isEqual(file2[key], file1[key])) {
-          acc += `    ${key}: ${file1[key]}\n`;
-        } else if (arrayFile2.includes(key) && !arrayFile1.includes(key)) {
-          acc += `  + ${key}: ${file2[key]}\n`;
-        }
-        else {
-          acc += `  - ${key}: ${file1[key]}\n  + ${key}: ${file2[key]}\n`;
-        }   
-      } else {
-        acc += `  - ${key}: ${file1[key]}\n`;
+const getDeepEqual = (file1, file2) => {
+  const arrayFile1 = Object.keys(file1);
+  const arrayFile2 = Object.keys(file2);
+  const combineArrays = _.union(arrayFile1, arrayFile2);
+  const turnOverCombiArrays = _.sortBy(combineArrays);
+
+  const diff = turnOverCombiArrays.map((key) => {
+    if (!_.has(file1, key)) {
+      console.log({key, value: file2[key], type: 'added'});
+      return {key, value: file2[key], type: 'added'}; 
+  }
+    if (!_.has(file2, key)) {
+      return {key, value: file1[key], type: 'deleted'};
+    }
+    if (_.isObject(file1[key]) && _.isObject(file2[key])) {
+      return {key, value: getDeepEqual(file1[key], file2[key]), type: 'inside'};
+    }
+    if (!_.isEqual(file1[key], file2[key])) {
+      return {key, value1: file1[key], value2: file2[key], type: 'modified',
+      };
+    }  
+    return { key, value: file1[key], type: 'unmodified' };
+  });
+  /*return convertToString(turnOverCombiArrays, arrayFile1, arrayFile2, file1, file2);*/
+  return diff; // Тут мы получили дерево наших файлов
+};
+
+//convertToString и ifFileIncludesKey - это наследие от первой версии функции для получения строки. Не знаю, нужны ли они теперь? И в таком ли виде? 
+
+const ifFileIncludesKey = (arrayFile1, arrayFile2, file1, file2, key) => {
+  if (_.isEqual(file2[key], file1[key])) {
+    return `    ${key}: ${file1[key]}\n`; 
+  } else if (!arrayFile1.includes(key)) {
+    return `  + ${key}: ${file2[key]}\n`;
+  } else if (!arrayFile2.includes(key)) { 
+    return `HELP  - ${key}: ${file1[key]}\n`;//эта строка никогда не отрабатывает
+  } else if (_.isObject(file1[key]) && _.isObject(file2[key])) {
+    return ` ${key}: {\n${getDeepEqual(file1[key], file2[key])}\n}`; 
+   }
+};
+
+const convertToString = (turnOverCombiArrays, arrayFile1, arrayFile2, file1, file2) => {
+  (() => { turnOverCombiArrays.map((key) => {
+    if (arrayFile2.includes(key)) {
+      acc += ifFileIncludesKey(arrayFile1, arrayFile2, file1, file2, key);
+    } else {
+      acc += `  - ${key}: ${file1[key]}\n`;
       }
-    });
-  })();
-    return (`{\n${acc}}`);
-  };
+  });        
+})();
+  return acc;
+};
+
+const getStart = () => {
+  //console.log(`{AAA\n${getDeepEqual(file1, file2)}}`);
+  return (`{\n${getDeepEqual(file1, file2)}}`);
+}
+
 
 const getDiff = (filepath1, filepath2) => {
     const typeFile1 = path.extname(filepath1).slice(1);
