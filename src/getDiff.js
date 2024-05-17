@@ -11,7 +11,7 @@ const getDeepEqual = (file1, file2) => {
   const combineArrays = _.union(arrayFile1, arrayFile2);
   const turnOverCombiArrays = _.sortBy(combineArrays);
 
-  const diff = turnOverCombiArrays.map((key) => {
+  const diff = turnOverCombiArrays.map((key) => { //создание дерева с необходимым типом
     if (!_.has(file1, key)) {
       console.log({key, value: file2[key], type: 'added'});
       return {key, value: file2[key], type: 'added'}; 
@@ -20,7 +20,7 @@ const getDeepEqual = (file1, file2) => {
       return {key, value: file1[key], type: 'deleted'};
     }
     if (_.isObject(file1[key]) && _.isObject(file2[key])) {
-      return {key, value: getDeepEqual(file1[key], file2[key]), type: 'inside'};
+      return {key, value: getDeepEqual(file1[key], file2[key]), type: 'inside'}; // тут в value undefined
     }
     if (!_.isEqual(file1[key], file2[key])) {
       return {key, value1: file1[key], value2: file2[key], type: 'modified',
@@ -28,34 +28,41 @@ const getDeepEqual = (file1, file2) => {
     }  
     return { key, value: file1[key], type: 'unmodified' };
   });
-  /*return convertToString(turnOverCombiArrays, arrayFile1, arrayFile2, file1, file2);*/
-  return diff; // Тут мы получили дерево наших файлов
-};
-
-//convertToString и ifFileIncludesKey - это наследие от первой версии функции для получения строки. Не знаю, нужны ли они теперь? И в таком ли виде? 
-
-const ifFileIncludesKey = (arrayFile1, arrayFile2, file1, file2, key) => {
-  if (_.isEqual(file2[key], file1[key])) {
-    return `    ${key}: ${file1[key]}\n`; 
-  } else if (!arrayFile1.includes(key)) {
-    return `  + ${key}: ${file2[key]}\n`;
-  } else if (!arrayFile2.includes(key)) { 
-    return `HELP  - ${key}: ${file1[key]}\n`;//эта строка никогда не отрабатывает
-  } else if (_.isObject(file1[key]) && _.isObject(file2[key])) {
-    return ` ${key}: {\n${getDeepEqual(file1[key], file2[key])}\n}`; 
-   }
-};
-
-const convertToString = (turnOverCombiArrays, arrayFile1, arrayFile2, file1, file2) => {
-  (() => { turnOverCombiArrays.map((key) => {
-    if (arrayFile2.includes(key)) {
-      acc += ifFileIncludesKey(arrayFile1, arrayFile2, file1, file2, key);
-    } else {
-      acc += `  - ${key}: ${file1[key]}\n`;
+  
+  const checkByType = (tree) => { //проверка типа
+    return tree.map((node) => {
+      if (node['type'] == 'added') {
+        return `+ ${node.key}: ${node.value}\n`;
       }
-  });        
-})();
-  return acc;
+      if (node['type'] == 'deleted') {
+        return `- ${node.key}: ${node.value}\n`;
+      }
+      if (node['type'] == 'inside') {
+        return `${node.key}: {\n${checkByType(node.value)}\n}`; //тут, соответственно тоже в value undefined
+      }
+      if (node['type'] == 'modified') {
+        return `- ${node.key}: ${node.value1}\n + ${node.key}: ${node.value2}\n`;
+      }
+      if (node['type'] == 'unmodified') {
+        return `${node.key}: ${node.value1}\n`;
+      }
+    })
+  };
+  
+  return checkByType(diff); 
+};
+
+
+const convertToString = (data, depth) => {
+  if (!_.isPlainObject(data)){
+    return `${String(data)}\n`; 
+  }
+
+  const indent = (depth, spaceCount = 4) => ' '.repeat(depth * spaceCount - 2);
+
+  const result = Object.entries(data)
+  .map(([key, value]) => convertToString(value, depth));
+  return `{\n${result.join('')}${indent(depth - 1)}  }\n`;
 };
 
 const getStart = () => {
