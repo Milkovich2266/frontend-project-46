@@ -3,9 +3,7 @@ import { readFileSync } from 'fs';
 import parsingFiles from '../src/dataParsing.js'
 import _ from 'lodash';
 
-let acc = [];
-
-const getDeepEqual = (file1, file2) => {
+const getTree = (file1, file2) => {
   const arrayFile1 = Object.keys(file1);
   const arrayFile2 = Object.keys(file2);
   const combineArrays = _.union(arrayFile1, arrayFile2);
@@ -20,7 +18,7 @@ const getDeepEqual = (file1, file2) => {
       return {key, value: file1[key], type: 'deleted'};
     }
     if (_.isObject(file1[key]) && _.isObject(file2[key])) {
-      return {key, value: getDeepEqual(file1[key], file2[key]), type: 'inside'}; // тут в value undefined
+      return {key, value: getTree(file1[key], file2[key]), type: 'inside'}; // тут в value undefined
     }
     if (!_.isEqual(file1[key], file2[key])) {
       return {key, value1: file1[key], value2: file2[key], type: 'modified',
@@ -28,30 +26,28 @@ const getDeepEqual = (file1, file2) => {
     }  
     return { key, value: file1[key], type: 'unmodified' };
   });
-  
-  const checkByType = (tree) => { //проверка типа
-    return tree.map((node) => {
-      if (node['type'] == 'added') {
-        return `+ ${node.key}: ${node.value}\n`;
-      }
-      if (node['type'] == 'deleted') {
-        return `- ${node.key}: ${node.value}\n`;
-      }
-      if (node['type'] == 'inside') {
-        return `${node.key}: {\n${checkByType(node.value)}\n}`; //тут, соответственно тоже в value undefined
-      }
-      if (node['type'] == 'modified') {
-        return `- ${node.key}: ${node.value1}\n + ${node.key}: ${node.value2}\n`;
-      }
-      if (node['type'] == 'unmodified') {
-        return `${node.key}: ${node.value1}\n`;
-      }
-    })
-  };
-  
-  return checkByType(diff); 
+  return diff; 
 };
 
+const checkByType = (tree) => { //проверка типа
+  return tree.map((node) => {
+    if (node['type'] == 'added') {
+      return `+ ${node.key}: ${node.value}\n`;
+    }
+    if (node['type'] == 'deleted') {
+      return `- ${node.key}: ${node.value}\n`;
+    }
+    if (node['type'] == 'inside') {
+      return `${node.key}: {\n${checkByType(node.value)}\n}`; //тут, соответственно тоже в value undefined
+    }
+    if (node['type'] == 'modified') {
+      return `- ${node.key}: ${node.value1}\n + ${node.key}: ${node.value2}\n`;
+    }
+    if (node['type'] == 'unmodified') {
+      return `${node.key}: ${node.value1}\n`;
+    }
+  })
+};
 
 const convertToString = (data, depth) => {
   if (!_.isPlainObject(data)){
@@ -67,7 +63,7 @@ const convertToString = (data, depth) => {
 
 const getStart = () => {
   //console.log(`{AAA\n${getDeepEqual(file1, file2)}}`);
-  return (`{\n${getDeepEqual(file1, file2)}}`);
+  return (`{\n${getTree(file1, file2)}}`);
 }
 
 
@@ -84,7 +80,7 @@ const getDiff = (filepath1, filepath2) => {
 
     const parsingFil1 = parsingFiles(readFile1, typeFile1); 
     const parsingFil2 = parsingFiles(readFile2, typeFile2);
-    return getDeepEqual(parsingFil1, parsingFil2);
+    return getTree(parsingFil1, parsingFil2);
 }; 
 
 
