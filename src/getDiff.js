@@ -49,21 +49,22 @@ const checkByType = (tree) => { //проверка типа
   })
 };
 
+const indent = (depth, spaceCount = 4) => ' '.repeat(depth * spaceCount - 2);
+
 const convertToString = (data, depth) => {
   if (!_.isPlainObject(data)){
     return `${String(data)}\n`; 
   }
-
-  const indent = (depth, spaceCount = 4) => ' '.repeat(depth * spaceCount - 2);
-
   const result = Object.entries(data)
   .map(([key, value]) => convertToString(value, depth));
   return `{\n${result.join('')}${indent(depth - 1)}  }\n`;
 };
 
-const getStart = () => {
-  //console.log(`{AAA\n${getDeepEqual(file1, file2)}}`);
-  return (`{\n${getTree(file1, file2)}}`);
+const getStart = (file1, file2) => {
+  const tree = getTree(file1, file2);
+  const check = checkByType(tree);
+  convertToString(check, 0);
+  //return (`{\n${getTree(file1, file2)}}`);
 }
 
 
@@ -80,7 +81,8 @@ const getDiff = (filepath1, filepath2) => {
 
     const parsingFil1 = parsingFiles(readFile1, typeFile1); 
     const parsingFil2 = parsingFiles(readFile2, typeFile2);
-    return getTree(parsingFil1, parsingFil2);
+    //return getTree(parsingFil1, parsingFil2);
+    return getStart(parsingFil1, parsingFil2);
 }; 
 
 
