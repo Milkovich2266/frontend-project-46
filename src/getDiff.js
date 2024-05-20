@@ -11,7 +11,6 @@ const getTree = (file1, file2) => {
 
   const diff = turnOverCombiArrays.map((key) => { //создание дерева с необходимым типом
     if (!_.has(file1, key)) {
-      console.log({key, value: file2[key], type: 'added'});
       return {key, value: file2[key], type: 'added'}; 
   }
     if (!_.has(file2, key)) {
@@ -29,22 +28,22 @@ const getTree = (file1, file2) => {
   return diff; 
 };
 
-const checkByType = (tree) => { //проверка типа
+const formatTree = (tree, depth) => { //проверка типа
   return tree.map((node) => {
     if (node['type'] == 'added') {
-      return `+ ${node.key}: ${node.value}\n`;
+      return `+ ${node.key}: ${convertToString(node.value, depth)}\n`;
     }
     if (node['type'] == 'deleted') {
-      return `- ${node.key}: ${node.value}\n`;
+      return `- ${node.key}: ${convertToString(node.value, depth)}\n`;
     }
     if (node['type'] == 'inside') {
-      return `${node.key}: {\n${checkByType(node.value)}\n}`; //тут, соответственно тоже в value undefined
+      return `${node.key}: {\n${formatTree(node.value)}\n}`; //тут, соответственно тоже в value undefined
     }
     if (node['type'] == 'modified') {
-      return `- ${node.key}: ${node.value1}\n + ${node.key}: ${node.value2}\n`;
+      return `- ${node.key}: ${convertToString(node.value1, depth)}\n + ${node.key}: ${convertToString(node.value2, depth)}\n`;
     }
     if (node['type'] == 'unmodified') {
-      return `${node.key}: ${node.value1}\n`;
+      return `${node.key}: ${convertToString(node.value1, depth)}\n`;
     }
   })
 };
@@ -62,10 +61,8 @@ const convertToString = (data, depth) => {
 
 const getStart = (file1, file2) => {
   const tree = getTree(file1, file2);
-  const check = checkByType(tree);
-  convertToString(check, 0);
-  //return (`{\n${getTree(file1, file2)}}`);
-}
+  return formatTree(tree, depth = 0);
+};
 
 
 const getDiff = (filepath1, filepath2) => {
